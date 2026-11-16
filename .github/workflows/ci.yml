@@ -11,17 +11,17 @@ permissions:
 
 jobs:
   backend:
-    name: Back-end (lint de importação, testes e cobertura)
+    name: Back-end (build, testes e cobertura)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Configurar Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
@@ -42,7 +42,7 @@ jobs:
 
       - name: Publicar relatório de cobertura
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: cobertura-backend
           path: backend/coverage.xml
