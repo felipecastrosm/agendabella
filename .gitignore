@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.db
+
+# Ambiente
+.env
+.env.*
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+coverage/
+
+# Editor / SO
+.DS_Store
+.idea/
+.vscode/
