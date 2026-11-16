@@ -151,6 +151,9 @@ class AgendamentoService:
         agendamento = self.agendamentos.obter(id_agendamento)
         if agendamento is None:
             raise RecursoNaoEncontrado("Agendamento não encontrado.")
+        if agendamento.status == StatusAgendamento.CANCELADO.value:
+            # O horário pode já ter sido reservado por outra cliente; reativar geraria duplicidade.
+            raise RegraNegocioError("Agendamentos cancelados não podem ter o status alterado.")
         if novo_status in (StatusAgendamento.REALIZADO.value, StatusAgendamento.FALTA.value):
             inicio = datetime.combine(agendamento.data, agendamento.hora_inicio)
             if inicio > self.relogio():
