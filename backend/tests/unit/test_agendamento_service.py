@@ -70,6 +70,14 @@ def test_cancelamento_libera_horario(service, dados):
     assert time(14, 0) in livres
 
 
+def test_agendamento_cancelado_nao_pode_ser_reativado(service, dados):
+    ag = _agendar(service, dados, time(14, 0))
+    service.alterar_status(ag.id, "cancelado")
+    _agendar(service, dados, time(14, 0), telefone="21911111111")  # outra cliente ocupa o horário
+    with pytest.raises(RegraNegocioError):
+        service.alterar_status(ag.id, "realizado")
+
+
 def test_nao_marca_falta_em_agendamento_futuro(service, dados):
     ag = _agendar(service, dados, time(14, 0))
     with pytest.raises(RegraNegocioError):
