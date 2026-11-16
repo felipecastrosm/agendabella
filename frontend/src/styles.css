@@ -1,0 +1,170 @@
+/* AgendaBella — estilos globais. Contrastes seguem WCAG 2.1 AA (RNF04). */
+:root {
+  --marca: #7a1f5c;        /* 9,6:1 com branco */
+  --marca-escura: #5c1545;
+  --marca-suave: #f6e9f1;
+  --texto: #1f1a1d;
+  --texto-2: #55505a;      /* 7,4:1 com branco */
+  --borda: #d9d2d8;
+  --fundo: #ffffff;
+  --superficie: #faf7f9;
+  --ok: #1d6b3a;           /* 6,3:1 */
+  --ok-suave: #e6f3ea;
+  --alerta: #8a4b00;       /* 6,0:1 */
+  --alerta-suave: #fdf0e1;
+  --erro: #a3141f;         /* 7,0:1 */
+  --erro-suave: #fdeaea;
+  --foco: #2b6cb0;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--texto);
+  background: #eee9ed;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+button, input, a { font: inherit; }
+:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }
+
+.tela {
+  max-width: 480px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: var(--fundo);
+  display: flex;
+  flex-direction: column;
+}
+
+.topo { background: var(--marca); color: #fff; padding: 18px 20px 16px; }
+.topo .salao { font-size: 20px; font-weight: 700; margin: 0; }
+.topo .sub { font-size: 15px; margin: 2px 0 0; }
+
+.passos {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px; background: var(--marca-suave);
+  font-size: 14px; font-weight: 600; color: var(--marca-escura);
+}
+.barra { flex: 1; height: 6px; background: #e3cbd9; border-radius: 3px; overflow: hidden; }
+.barra i { display: block; height: 100%; background: var(--marca); }
+
+main { flex: 1; padding: 16px 20px 8px; }
+.titulo-secao { font-size: 17px; margin: 14px 0 10px; }
+
+.cartao {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  min-height: 56px; padding: 12px 14px; margin-bottom: 8px; text-align: left;
+  border: 2px solid var(--borda); border-radius: 12px; background: #fff; color: var(--texto); cursor: pointer;
+}
+.cartao .t { display: block; font-weight: 600; }
+.cartao .d { display: block; font-size: 14px; color: var(--texto-2); }
+.cartao.sel, .opcao.sel { border-color: var(--marca); background: var(--marca-suave); color: var(--marca-escura); }
+.tag { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--marca-escura); white-space: nowrap; }
+.chk {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--marca); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 14px; flex: none;
+}
+
+.grade-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.opcao {
+  min-height: 48px; padding: 8px 12px; border: 2px solid var(--borda); border-radius: 12px;
+  background: #fff; color: var(--texto); font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+.opcao:disabled { opacity: .55; cursor: not-allowed; }
+.largura-total { width: 100%; }
+
+.rodape { padding: 12px 20px 20px; border-top: 1px solid var(--borda); background: #fff; }
+.botao {
+  display: flex; align-items: center; justify-content: center; width: 100%; min-height: 52px;
+  border-radius: 12px; border: 0; background: var(--marca); color: #fff; font-size: 17px; font-weight: 700;
+  cursor: pointer; text-decoration: none;
+}
+.botao:disabled { background: #9b7a90; cursor: not-allowed; }
+.botao.secundario { background: #fff; color: var(--marca-escura); border: 2px solid var(--marca); margin-top: 8px; }
+.espaco-topo { margin-top: 16px; }
+.dica { font-size: 13px; color: var(--texto-2); text-align: center; margin: 8px 0 0; }
+.dica.esquerda { text-align: left; }
+
+.resumo {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  padding: 10px 14px; border: 1px solid var(--borda); border-radius: 12px; background: var(--superficie);
+  margin-bottom: 6px; font-size: 15px;
+}
+.resumo a { color: var(--marca-escura); font-weight: 700; min-height: 44px; display: inline-flex; align-items: center; }
+
+.dias { display: flex; gap: 6px; margin-bottom: 6px; overflow-x: auto; }
+.dia {
+  flex: 1; min-width: 48px; min-height: 58px; border: 2px solid var(--borda); border-radius: 10px; background: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 12px; color: var(--texto-2); cursor: pointer;
+}
+.dia b { font-size: 17px; color: var(--texto); }
+.dia.sel { border-color: var(--marca); background: var(--marca); color: #fff; }
+.dia.sel b { color: #fff; }
+
+.horarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+.horario {
+  min-height: 52px; border: 2px solid var(--borda); border-radius: 10px; background: #fff; color: var(--texto);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;
+}
+.horario b { font-size: 16px; }
+.horario span { font-size: 11px; color: var(--ok); font-weight: 700; }
+.horario.sel { border-color: var(--marca); background: var(--marca-suave); }
+.horario.sel span { color: var(--marca-escura); }
+.vazio { color: var(--texto-2); font-size: 15px; }
+
+label { display: block; font-weight: 700; font-size: 15px; margin: 12px 0 4px; }
+.exemplo { font-weight: 400; color: var(--texto-2); font-size: 13px; }
+.campo {
+  width: 100%; min-height: 50px; border: 2px solid #8d8590; border-radius: 10px; padding: 12px;
+  font-size: 16px; color: var(--texto); background: #fff;
+}
+.campo.invalido { border-color: var(--erro); background: #fffafa; }
+.msg-erro, .alerta-erro { display: flex; gap: 6px; align-items: flex-start; color: var(--erro); font-size: 14px; font-weight: 600; margin: 6px 0 0; }
+.alerta-erro { background: var(--erro-suave); padding: 10px 12px; border-radius: 10px; margin: 10px 0; }
+.ico {
+  flex: none; width: 20px; height: 20px; border-radius: 50%; background: var(--erro); color: #fff;
+  font-size: 13px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800;
+}
+
+.resultado { text-align: center; padding: 18px 10px 6px; }
+.icone-ok {
+  width: 72px; height: 72px; border-radius: 50%; background: var(--ok); color: #fff; font-size: 40px;
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;
+}
+.texto-ok { color: var(--ok); font-size: 22px; margin: 4px 0 6px; }
+.texto-alerta { color: var(--alerta); font-size: 18px; margin: 0; }
+.caixa { border-radius: 12px; padding: 14px 16px; margin: 14px 0; }
+.caixa.ok { background: var(--ok-suave); border: 2px solid var(--ok); }
+.caixa.alerta { background: var(--alerta-suave); border: 2px solid var(--alerta); }
+.alerta-titulo { display: flex; gap: 10px; align-items: center; }
+.icone-alerta {
+  flex: none; width: 28px; height: 28px; border-radius: 6px; background: var(--alerta); color: #fff;
+  font-weight: 900; display: flex; align-items: center; justify-content: center;
+}
+.linha { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,.08); }
+.linha:last-child { border-bottom: 0; }
+.linha dt { color: var(--texto-2); }
+.linha dd { margin: 0; font-weight: 700; }
+dl { margin: 0; }
+.nota { font-size: 14px; color: var(--texto-2); margin: 6px 0 0; }
+.nota.escura { color: var(--texto); margin: 8px 0 10px; }
+
+.barra-painel { display: flex; justify-content: space-between; align-items: center; }
+.link { background: none; border: 0; color: var(--marca-escura); font-weight: 700; text-decoration: underline; min-height: 44px; cursor: pointer; }
+.alternador { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.grupo { margin-top: 8px; }
+.item { border: 1px solid var(--borda); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+.item.cancelado { background: var(--superficie); color: var(--texto-2); }
+.item-topo { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
+.status { font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; }
+.status-confirmado { color: var(--marca-escura); }
+.status-realizado { color: var(--ok); }
+.status-falta { color: var(--erro); }
+.status-cancelado { color: var(--texto-2); }
+.acoes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
+.acoes .opcao { font-size: 14px; padding: 6px; }
