@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.database import Base, engine
-from app.routers import publico
+from app.routers import auth, painel, publico
 
 logger = logging.getLogger("agendabella")
 
@@ -58,6 +58,8 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     app.include_router(publico.router)
+    app.include_router(auth.router)
+    app.include_router(painel.router)
     return app
 
 
