@@ -39,6 +39,18 @@ def create_app() -> FastAPI:
         allow_headers=["Authorization", "Content-Type"],
     )
 
+    @app.middleware("http")
+    async def cabecalhos_de_seguranca(request: Request, call_next):
+        # Endurecimento de respostas HTTP (OWASP A05:2021, configuração segura).
+        resposta = await call_next(request)
+        resposta.headers["X-Content-Type-Options"] = "nosniff"
+        resposta.headers["X-Frame-Options"] = "DENY"
+        resposta.headers["Referrer-Policy"] = "no-referrer"
+        resposta.headers["Cache-Control"] = "no-store"
+        if settings.producao:
+            resposta.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        return resposta
+
     @app.exception_handler(RequestValidationError)
     async def erro_validacao(_: Request, exc: RequestValidationError):
         # Devolve apenas as mensagens de validação, sem detalhes internos.
