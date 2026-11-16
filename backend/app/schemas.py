@@ -6,6 +6,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.formatacao import hhmm
+
 # Letras (inclusive acentuadas), espaço, hífen e apóstrofo — rejeita tags e símbolos (OWASP A03).
 PADRAO_NOME = re.compile(r"^[A-Za-zÀ-ÖØ-öø-ÿ' -]{2,80}$")
 
@@ -64,6 +66,8 @@ class AgendamentoIn(BaseModel):
 
 
 class AgendamentoConfirmado(BaseModel):
+    """Resposta pública: não inclui nome nem telefone da cliente."""
+
     id: int
     servico: str
     profissional: str
@@ -71,6 +75,18 @@ class AgendamentoConfirmado(BaseModel):
     hora_inicio: str
     hora_fim: str
     status: str
+
+    @classmethod
+    def de_modelo(cls, ag) -> "AgendamentoConfirmado":
+        return cls(
+            id=ag.id,
+            servico=ag.servico.nome,
+            profissional=ag.profissional.nome,
+            data=ag.data,
+            hora_inicio=hhmm(ag.hora_inicio),
+            hora_fim=hhmm(ag.hora_fim),
+            status=ag.status,
+        )
 
 
 class ConflitoOut(BaseModel):
@@ -101,6 +117,21 @@ class AgendamentoPainel(BaseModel):
     servico: str
     id_profissional: int
     profissional: str
+
+    @classmethod
+    def de_modelo(cls, ag) -> "AgendamentoPainel":
+        return cls(
+            id=ag.id,
+            data=ag.data,
+            hora_inicio=hhmm(ag.hora_inicio),
+            hora_fim=hhmm(ag.hora_fim),
+            status=ag.status,
+            cliente=ag.cliente.nome,
+            telefone=ag.cliente.telefone,
+            servico=ag.servico.nome,
+            id_profissional=ag.id_profissional,
+            profissional=ag.profissional.nome,
+        )
 
 
 class AgendaProfissional(BaseModel):

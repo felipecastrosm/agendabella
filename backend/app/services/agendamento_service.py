@@ -12,6 +12,7 @@ from datetime import date, datetime, time, timedelta
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.formatacao import lista_hhmm
 from app.models import Agendamento, Profissional, Servico, StatusAgendamento
 from app.repositories import (
     AgendamentoRepository,
@@ -22,6 +23,7 @@ from app.repositories import (
 
 PASSO_MINUTOS = 15
 ANTECEDENCIA_MINIMA_MINUTOS = 30
+MAX_ALTERNATIVAS = 6
 
 
 class RegraNegocioError(Exception):
@@ -123,7 +125,7 @@ class AgendamentoService:
             profissional, servico, dia, self._ocupados(id_profissional, dia), self.relogio()
         )
         if hora_inicio not in livres:
-            raise ConflitoHorario([h.strftime("%H:%M") for h in livres[:6]])
+            raise ConflitoHorario(lista_hhmm(livres, limite=MAX_ALTERNATIVAS))
 
         cliente = self.clientes.obter_ou_criar(nome, telefone)
         agendamento = Agendamento(
@@ -142,7 +144,7 @@ class AgendamentoService:
             # Corrida entre duas gravações simultâneas: o índice único do banco barra a segunda.
             self.db.rollback()
             restantes = self.horarios_disponiveis(id_servico, id_profissional, dia)
-            raise ConflitoHorario([h.strftime("%H:%M") for h in restantes[:6]]) from None
+            raise ConflitoHorario(lista_hhmm(restantes, limite=MAX_ALTERNATIVAS)) from None
         self.db.refresh(agendamento)
         return agendamento
 

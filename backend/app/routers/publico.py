@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.formatacao import lista_hhmm
 from app.repositories import ProfissionalRepository, ServicoRepository
 from app.schemas import (
     AgendamentoConfirmado,
@@ -54,7 +55,7 @@ def horarios_disponiveis(
         data=data,
         id_profissional=id_profissional,
         id_servico=id_servico,
-        horarios=[h.strftime("%H:%M") for h in horarios],
+        horarios=lista_hhmm(horarios),
     )
 
 
@@ -84,12 +85,4 @@ def criar_agendamento(
             status_code=status.HTTP_409_CONFLICT,
             content=ConflitoOut(mensagem=str(conflito), alternativas=conflito.alternativas).model_dump(),
         )
-    return AgendamentoConfirmado(
-        id=ag.id,
-        servico=ag.servico.nome,
-        profissional=ag.profissional.nome,
-        data=ag.data,
-        hora_inicio=ag.hora_inicio.strftime("%H:%M"),
-        hora_fim=ag.hora_fim.strftime("%H:%M"),
-        status=ag.status,
-    )
+    return AgendamentoConfirmado.de_modelo(ag)

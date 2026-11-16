@@ -27,21 +27,6 @@ def get_agendamento_service(db: Session = Depends(get_db)) -> AgendamentoService
     return AgendamentoService(db)
 
 
-def _para_painel(ag) -> AgendamentoPainel:
-    return AgendamentoPainel(
-        id=ag.id,
-        data=ag.data,
-        hora_inicio=ag.hora_inicio.strftime("%H:%M"),
-        hora_fim=ag.hora_fim.strftime("%H:%M"),
-        status=ag.status,
-        cliente=ag.cliente.nome,
-        telefone=ag.cliente.telefone,
-        servico=ag.servico.nome,
-        id_profissional=ag.id_profissional,
-        profissional=ag.profissional.nome,
-    )
-
-
 @router.get("/agenda", response_model=AgendaOut)
 def agenda(
     data: date = Query(default_factory=date.today),
@@ -53,7 +38,7 @@ def agenda(
     agendamentos = AgendamentoRepository(db).listar_periodo(data, fim)
     grupos = []
     for prof in ProfissionalRepository(db).listar_ativas():
-        itens = [_para_painel(a) for a in agendamentos if a.id_profissional == prof.id]
+        itens = [AgendamentoPainel.de_modelo(a) for a in agendamentos if a.id_profissional == prof.id]
         grupos.append(AgendaProfissional(id_profissional=prof.id, profissional=prof.nome, agendamentos=itens))
     return AgendaOut(inicio=data, fim=fim, profissionais=grupos)
 
@@ -72,4 +57,4 @@ def alterar_status(
         raise HTTPException(status.HTTP_404_NOT_FOUND, str(erro)) from None
     except RegraNegocioError as erro:
         raise HTTPException(422, str(erro)) from None
-    return _para_painel(ag)
+    return AgendamentoPainel.de_modelo(ag)
