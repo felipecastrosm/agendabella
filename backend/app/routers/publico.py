@@ -15,6 +15,7 @@ from app.schemas import (
     ConflitoOut,
     HorariosOut,
     ProfissionalOut,
+    ProximoDiaOut,
     ServicoOut,
 )
 from app.services.agendamento_service import (
@@ -57,6 +58,20 @@ def horarios_disponiveis(
         id_servico=id_servico,
         horarios=lista_hhmm(horarios),
     )
+
+
+@router.get("/proximo-dia-disponivel", response_model=ProximoDiaOut)
+def proximo_dia_disponivel(
+    id_servico: int = Query(gt=0),
+    id_profissional: int = Query(gt=0),
+    a_partir_de: date = Query(),
+    service: AgendamentoService = Depends(get_agendamento_service),
+):
+    try:
+        dia = service.proximo_dia_disponivel(id_servico, id_profissional, a_partir_de)
+    except RecursoNaoEncontrado as erro:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, str(erro)) from None
+    return ProximoDiaOut(data=dia)
 
 
 @router.post(

@@ -43,6 +43,10 @@ class HorariosOut(BaseModel):
     horarios: list[str]
 
 
+class ProximoDiaOut(BaseModel):
+    data: date | None
+
+
 class AgendamentoIn(BaseModel):
     id_servico: int = Field(gt=0)
     id_profissional: int = Field(gt=0)
