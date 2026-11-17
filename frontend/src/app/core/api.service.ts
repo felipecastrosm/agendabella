@@ -36,6 +36,14 @@ export class ApiService {
     return this.http.get<Horarios>(`${this.base}/horarios-disponiveis`, { params });
   }
 
+  proximoDia(idServico: number, idProfissional: number, aPartirDe: string): Observable<{ data: string | null }> {
+    const params = new HttpParams()
+      .set('id_servico', idServico)
+      .set('id_profissional', idProfissional)
+      .set('a_partir_de', aPartirDe);
+    return this.http.get<{ data: string | null }>(`${this.base}/proximo-dia-disponivel`, { params });
+  }
+
   agendar(dados: NovoAgendamento): Observable<AgendamentoConfirmado> {
     return this.http.post<AgendamentoConfirmado>(`${this.base}/agendamentos`, dados);
   }
