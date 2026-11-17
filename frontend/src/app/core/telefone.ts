@@ -18,6 +18,19 @@ export function validarNome(valor: string): string | null {
     : 'Informe seu nome usando apenas letras (mínimo de 2 caracteres).';
 }
 
+/** Formata "21981112233" como "(21) 98111-2233" (exibição no painel). */
+export function formatarTelefone(digitos: string): string {
+  const d = digitos.replace(/\D/g, '');
+  if (d.length === 11) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+  if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return digitos;
+}
+
+/** Link para abrir conversa no WhatsApp com o código do Brasil. */
+export function linkWhatsApp(digitos: string): string {
+  return `https://wa.me/55${digitos.replace(/\D/g, '')}`;
+}
+
 /** Aplica a máscara "21 90000-0000" enquanto a pessoa digita. */
 export function mascararTelefone(valor: string): string {
   const d = valor.replace(/\D/g, '').slice(0, 11);

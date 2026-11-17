@@ -168,3 +168,11 @@ dl { margin: 0; }
 .status-cancelado { color: var(--texto-2); }
 .acoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 6px; margin-top: 10px; }
 .acoes .opcao { font-size: 14px; padding: 6px; }
+
+/* Ajustes da 1ª rodada de validação */
+.periodo { font-size: 15px; color: var(--texto-2); margin: 12px 0 6px; text-transform: uppercase; letter-spacing: .5px; }
+.contato { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.whatsapp {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 6px 14px; border-radius: 999px;
+  border: 2px solid var(--ok); color: var(--ok); font-weight: 700; text-decoration: none; font-size: 14px;
+}
