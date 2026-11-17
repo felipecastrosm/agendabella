@@ -1,0 +1,54 @@
+name: Monitoramento
+
+# Verificação de disponibilidade do AgendaBella em produção.
+# Roda a cada 10 minutos e também pode ser disparada manualmente.
+# Se a aplicação ou o banco estiverem fora do ar, a execução falha (status DOWN)
+# e o GitHub envia notificação por e-mail ao responsável pelo repositório.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  URL_PRODUCAO: ${{ vars.URL_PRODUCAO || 'https://agendabella.onrender.com' }}
+
+jobs:
+  disponibilidade:
+    name: Verificar saúde da aplicação
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: API e banco de dados (/api/saude)
+        run: |
+          # O plano gratuito do Render "dorme" sem uso; até 5 tentativas cobrem a inicialização a frio.
+          for tentativa in 1 2 3 4 5; do
+            inicio=$(date +%s%3N)
+            codigo=$(curl -s -o resposta.json -w '%{http_code}' --max-time 60 "$URL_PRODUCAO/api/saude" || echo 000)
+            tempo=$(( $(date +%s%3N) - inicio ))
+            echo "Tentativa $tentativa: HTTP $codigo em ${tempo} ms — $(cat resposta.json 2>/dev/null)"
+            if [ "$codigo" = "200" ] && grep -q '"ok"' resposta.json; then
+              echo "### ✅ UP — HTTP 200 em ${tempo} ms" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "### ❌ DOWN — último código HTTP: $codigo" >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+
+      - name: Interface (página inicial)
+        run: |
+          codigo=$(curl -s -o pagina.html -w '%{http_code}' --max-time 60 "$URL_PRODUCAO/")
+          echo "Página inicial: HTTP $codigo"
+          test "$codigo" = "200" && grep -q "AgendaBella" pagina.html
+          echo "- Interface: HTTP $codigo" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fluxo público (lista de serviços)
+        run: |
+          codigo=$(curl -s -o servicos.json -w '%{http_code}' --max-time 60 "$URL_PRODUCAO/api/servicos")
+          echo "Serviços: HTTP $codigo — $(head -c 120 servicos.json)"
+          test "$codigo" = "200"
+          echo "- API de serviços: HTTP $codigo" >> "$GITHUB_STEP_SUMMARY"
