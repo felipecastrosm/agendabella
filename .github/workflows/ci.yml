@@ -70,5 +70,12 @@ jobs:
       - name: Build de produção
         run: npm run build
 
+      - name: Verificar compatibilidade do index.html com a CSP (sem scripts inline)
+        run: |
+          if grep -Eq '<script>|<script [^>]*>[^<]+</script>|onload=' dist/frontend/browser/index.html; then
+            echo "index.html contém script inline, que seria bloqueado pela Content Security Policy." >&2
+            exit 1
+          fi
+
       - name: Auditoria de dependências (vulnerabilidades altas ou críticas)
         run: npm audit --audit-level=high --omit=dev
