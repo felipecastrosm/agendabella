@@ -100,7 +100,7 @@ def montar_frontend(app: FastAPI, pasta: Path) -> None:
         return
     raiz = pasta.resolve()
 
-    @app.get("/{caminho:path}", include_in_schema=False)
+    @app.api_route("/{caminho:path}", methods=["GET", "HEAD"], include_in_schema=False)
     def frontend(caminho: str):
         if caminho.startswith("api/"):
             return JSONResponse(status_code=404, content={"detail": "Recurso não encontrado."})

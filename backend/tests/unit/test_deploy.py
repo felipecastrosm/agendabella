@@ -64,3 +64,9 @@ def test_bloqueia_path_traversal(tmp_path, db):
     client = _app_com_front(tmp_path, db)
     resp = client.get("/..%2Fsegredo.txt")
     assert "nao" != resp.text and "AgendaBella" in resp.text
+
+
+def test_head_em_arquivos_do_front_end(tmp_path, db):
+    client = _app_com_front(tmp_path, db)
+    assert client.head("/").status_code == 200
+    assert client.head("/main-ABCDEFGH.js").status_code == 200
