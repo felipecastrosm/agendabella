@@ -1,5 +1,7 @@
 # AgendaBella
 
+[![CI](https://github.com/felipecastrosm/agendabella/actions/workflows/ci.yml/badge.svg)](https://github.com/felipecastrosm/agendabella/actions/workflows/ci.yml) [![Monitoramento](https://github.com/felipecastrosm/agendabella/actions/workflows/monitor.yml/badge.svg)](https://github.com/felipecastrosm/agendabella/actions/workflows/monitor.yml)
+
 Agenda online para pequenos salões de beleza de bairro. MVP desenvolvido na disciplina de **Projeto de Software** (Experiências Práticas I, II e III), a partir do diagnóstico do parceiro comunitário **Studio Bella Cabelos** (Méier, Rio de Janeiro/RJ).
 
 ## Problema
@@ -68,6 +70,26 @@ npm ci
 npm start                   # http://localhost:4200
 ```
 
+## Produção (deploy)
+
+A aplicação é publicada no **Render** a partir do [`render.yaml`](render.yaml) (Blueprint):
+
+- **Serviço web** (`Dockerfile`): build do Angular + API FastAPI em uma única imagem; a API entrega o front-end na mesma origem.
+- **PostgreSQL** gerenciado do Render, ligado por `DATABASE_URL`.
+- Ao iniciar, `python -m app.bootstrap` cria as tabelas e a carga inicial do salão (serviços e equipe), de forma idempotente. A senha inicial da equipe vem de `BOOTSTRAP_SENHA`, definida no painel do Render.
+- *Health check* em `/api/saude` (verifica API e banco). Deploy automático a cada push na `main`.
+
+### Monitoramento
+
+O workflow [`monitor.yml`](.github/workflows/monitor.yml) verifica a cada 10 minutos a saúde da API, a página inicial e a lista de serviços em produção. Uma falha marca a execução como **DOWN** e o GitHub notifica por e-mail; o selo "Monitoramento" acima mostra o status atual.
+
+### Executar a imagem localmente
+
+```bash
+docker build -t agendabella .
+docker run -p 8000:8000 -e DATABASE_URL=postgres://... -e JWT_SECRET=... -e BOOTSTRAP_SENHA=... agendabella
+```
+
 ## Variáveis de ambiente (back-end)
 
 | Variável | Descrição | Padrão (dev) |
@@ -76,6 +98,8 @@ npm start                   # http://localhost:4200
 | `JWT_SECRET` | Chave de assinatura dos tokens | valor de desenvolvimento |
 | `CORS_ORIGINS` | Origens permitidas, separadas por vírgula | `http://localhost:4200` |
 | `APP_ENV` | `development` ou `production` | `development` |
+| `BOOTSTRAP_SENHA` | Senha inicial da equipe na carga de produção | — (obrigatória em produção) |
+| `FRONTEND_DIST` | Pasta do build do Angular servida pela API | `../frontend/dist/frontend/browser` |
 
 Nenhum segredo deve ser versionado; use variáveis de ambiente do provedor de hospedagem.
 
