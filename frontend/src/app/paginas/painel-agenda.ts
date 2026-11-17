@@ -13,7 +13,7 @@ const ROTULOS: Record<AgendamentoPainel['status'], { texto: string; icone: strin
   confirmado: { texto: 'Confirmado', icone: '●' },
   realizado: { texto: 'Realizado', icone: '✓' },
   falta: { texto: 'Falta', icone: '✕' },
-  cancelado: { texto: 'Cancelado', icone: '—' },
+  cancelado: { texto: 'Cancelado', icone: '⊘' },
 };
 
 /** Painel da equipe: agenda do dia/semana por profissional e alteração de status (RF04, RF05). */
@@ -50,7 +50,7 @@ const ROTULOS: Record<AgendamentoPainel['status'], { texto: string; icone: strin
             @for (ag of grupo.agendamentos; track ag.id) {
               <article class="item" [class.cancelado]="ag.status === 'cancelado'">
                 <div class="item-topo">
-                  <b>{{ dias() === 7 ? curta(ag.data) + ' · ' : '' }}{{ ag.hora_inicio }}–{{ ag.hora_fim }}</b>
+                  <b>{{ dias() === 7 ? curta(ag.data) + ' · ' : '' }}{{ ag.hora_inicio }} às {{ ag.hora_fim }}</b>
                   <span class="status status-{{ ag.status }}">
                     <span aria-hidden="true">{{ rotulo(ag).icone }}</span> {{ rotulo(ag).texto }}
                   </span>

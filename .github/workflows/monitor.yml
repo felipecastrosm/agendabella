@@ -29,14 +29,14 @@ jobs:
             inicio=$(date +%s%3N)
             codigo=$(curl -s -o resposta.json -w '%{http_code}' --max-time 60 "$URL_PRODUCAO/api/saude" || echo 000)
             tempo=$(( $(date +%s%3N) - inicio ))
-            echo "Tentativa $tentativa: HTTP $codigo em ${tempo} ms — $(cat resposta.json 2>/dev/null)"
+            echo "Tentativa $tentativa: HTTP $codigo em ${tempo} ms: $(cat resposta.json 2>/dev/null)"
             if [ "$codigo" = "200" ] && grep -q '"ok"' resposta.json; then
-              echo "### ✅ UP — HTTP 200 em ${tempo} ms" >> "$GITHUB_STEP_SUMMARY"
+              echo "### Status UP: HTTP 200 em ${tempo} ms" >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi
             sleep 20
           done
-          echo "### ❌ DOWN — último código HTTP: $codigo" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Status DOWN: último código HTTP $codigo" >> "$GITHUB_STEP_SUMMARY"
           exit 1
 
       - name: Interface (página inicial)
@@ -49,6 +49,6 @@ jobs:
       - name: Fluxo público (lista de serviços)
         run: |
           codigo=$(curl -s -o servicos.json -w '%{http_code}' --max-time 60 "$URL_PRODUCAO/api/servicos")
-          echo "Serviços: HTTP $codigo — $(head -c 120 servicos.json)"
+          echo "Serviços: HTTP $codigo, $(head -c 120 servicos.json)"
           test "$codigo" = "200"
           echo "- API de serviços: HTTP $codigo" >> "$GITHUB_STEP_SUMMARY"

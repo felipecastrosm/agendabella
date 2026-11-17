@@ -1,1 +1,1 @@
-"""AgendaBella — API de agendamento para pequenos salões de beleza."""
+"""AgendaBella: API de agendamento para pequenos salões de beleza."""

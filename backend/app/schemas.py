@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.formatacao import hhmm
 
-# Letras (inclusive acentuadas), espaço, hífen e apóstrofo — rejeita tags e símbolos (OWASP A03).
+# Letras (inclusive acentuadas), espaço, hífen e apóstrofo; rejeita tags e símbolos (OWASP A03).
 PADRAO_NOME = re.compile(r"^[A-Za-zÀ-ÖØ-öø-ÿ' -]{2,80}$")
 
 

@@ -1,4 +1,4 @@
-# AgendaBella — front-end
+# AgendaBella: front-end
 
 SPA em Angular (com PWA) para a cliente agendar e para a equipe acessar o painel.
 

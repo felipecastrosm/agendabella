@@ -18,7 +18,7 @@ export function validarNome(valor: string): string | null {
     : 'Informe seu nome usando apenas letras (mínimo de 2 caracteres).';
 }
 
-/** "21981112233" → "(21) 98111-2233" (exibição no painel). */
+/** Formata "21981112233" como "(21) 98111-2233" (exibição no painel). */
 export function formatarTelefone(digitos: string): string {
   const d = digitos.replace(/\D/g, '');
   if (d.length === 11) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;

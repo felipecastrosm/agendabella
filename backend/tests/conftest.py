@@ -13,7 +13,7 @@ from app.main import create_app
 from app.models import Profissional, Servico
 from app.routers import publico
 
-# Segunda-feira, 23/11/2026, 08:00 — o "agora" de todos os testes.
+# Segunda-feira, 23/11/2026, 08:00: o "agora" de todos os testes.
 AGORA = datetime(2026, 11, 23, 8, 0)
 TERCA = date(2026, 11, 24)
 DOMINGO = date(2026, 11, 29)

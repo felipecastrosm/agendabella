@@ -28,7 +28,7 @@ import { Cabecalho } from '../shared/cabecalho';
             <p class="msg-erro" role="alert"><span class="ico" aria-hidden="true">!</span>{{ erro() }}</p>
           }
           <button type="submit" class="botao espaco-topo" [disabled]="enviando()">
-            {{ enviando() ? 'Entrando…' : 'Entrar' }}
+            {{ enviando() ? 'Entrando...' : 'Entrar' }}
           </button>
         </form>
       </main>

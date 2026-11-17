@@ -11,7 +11,7 @@ import { Conflito, Profissional } from '../core/modelos';
 import { mascararTelefone, validarNome, validarTelefone } from '../core/telefone';
 import { Cabecalho } from '../shared/cabecalho';
 
-/** Tela 2 — Funcionalidade central: escolha de horário e dados da cliente (RF01, RF02, RNF02, RNF04). */
+/** Tela 2, funcionalidade central: escolha de horário e dados da cliente (RF01, RF02, RNF02, RNF04). */
 @Component({
   selector: 'app-escolha-horario',
   imports: [Cabecalho, RouterLink],
@@ -34,9 +34,9 @@ import { Cabecalho } from '../shared/cabecalho';
           }
         </div>
 
-        <h2 class="titulo-secao">Horários disponíveis — {{ dataSelecionada() }}</h2>
+        <h2 class="titulo-secao">Horários disponíveis: {{ dataSelecionada() }}</h2>
         @if (carregando()) {
-          <p class="dica" role="status">Carregando horários…</p>
+          <p class="dica" role="status">Carregando horários...</p>
         } @else if (horarios().length === 0) {
           <p class="vazio" role="status">
             Não há horários livres neste dia: o salão pode estar fechado ou com a agenda completa. Escolha outro dia.
@@ -45,7 +45,7 @@ import { Cabecalho } from '../shared/cabecalho';
           @for (periodo of periodos(); track periodo.nome) {
             @if (periodo.horarios.length) {
               <h3 class="periodo">{{ periodo.nome }}</h3>
-              <div class="horarios" role="group" [attr.aria-label]="'Horários disponíveis — ' + periodo.nome">
+              <div class="horarios" role="group" [attr.aria-label]="'Horários disponíveis, ' + periodo.nome">
                 @for (h of periodo.horarios; track h) {
                   <button type="button" class="horario" [class.sel]="estado.hora() === h"
                           [attr.aria-pressed]="estado.hora() === h" (click)="estado.hora.set(h)">
@@ -66,7 +66,7 @@ import { Cabecalho } from '../shared/cabecalho';
           <p class="msg-erro" id="erro-nome" role="alert"><span class="ico" aria-hidden="true">!</span>{{ erroNome() }}</p>
         }
 
-        <label for="telefone">Telefone com DDD <span class="exemplo">— ex.: 21 90000-0000</span></label>
+        <label for="telefone">Telefone com DDD <span class="exemplo">(ex.: 21 90000-0000)</span></label>
         <input id="telefone" class="campo" [class.invalido]="erroTelefone()" type="tel" inputmode="numeric"
                autocomplete="tel-national" [value]="estado.telefone()" (input)="digitarTelefone($event)"
                [attr.aria-invalid]="!!erroTelefone()" aria-describedby="erro-telefone" />
@@ -79,7 +79,7 @@ import { Cabecalho } from '../shared/cabecalho';
       </main>
       <footer class="rodape">
         <button type="button" class="botao" [disabled]="enviando()" (click)="confirmar()">
-          {{ enviando() ? 'Confirmando…' : 'Confirmar agendamento' }}
+          {{ enviando() ? 'Confirmando...' : 'Confirmar agendamento' }}
         </button>
         <a class="botao secundario" routerLink="/">Voltar</a>
       </footer>
@@ -98,7 +98,7 @@ export class EscolhaHorario implements OnInit {
   readonly erroNome = signal<string | null>(null);
   readonly erroTelefone = signal<string | null>(null);
   readonly erroGeral = signal<string | null>(null);
-  /** Com "Sem preferência": horário → profissionais livres nesse horário. */
+  /** Com "Sem preferência": para cada horário, as profissionais livres nele. */
   private livresPorHorario = new Map<string, number[]>();
   private profissionais: Profissional[] = [];
 

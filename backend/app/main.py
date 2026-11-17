@@ -51,7 +51,7 @@ def create_app(frontend_dist: Path | None | object = _PADRAO) -> FastAPI:
 
     @app.middleware("http")
     async def cabecalhos_de_seguranca(request: Request, call_next):
-        # Endurecimento de respostas HTTP (OWASP A05:2021 — configuração segura).
+        # Endurecimento de respostas HTTP (OWASP A05:2021, configuração segura).
         resposta = await call_next(request)
         resposta.headers["X-Content-Type-Options"] = "nosniff"
         resposta.headers["X-Frame-Options"] = "DENY"

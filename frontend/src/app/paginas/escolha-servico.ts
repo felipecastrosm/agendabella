@@ -7,7 +7,7 @@ import { ApiService } from '../core/api.service';
 import { Profissional, Servico } from '../core/modelos';
 import { Cabecalho } from '../shared/cabecalho';
 
-/** Tela 1 — Entrada principal: escolha de serviço e profissional (RF01, RNF04). */
+/** Tela 1, entrada principal: escolha de serviço e profissional (RF01, RNF04). */
 @Component({
   selector: 'app-escolha-servico',
   imports: [Cabecalho],

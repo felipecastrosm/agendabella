@@ -5,7 +5,7 @@ import { AgendamentoEstado } from '../core/agendamento-estado.service';
 import { dataPorExtenso } from '../core/datas';
 import { Cabecalho } from '../shared/cabecalho';
 
-/** Tela 3 — Alertas e resultados: confirmação ou conflito (RF02, RNF04). */
+/** Tela 3, alertas e resultados: confirmação ou conflito (RF02, RNF04). */
 @Component({
   selector: 'app-resultado',
   imports: [Cabecalho, RouterLink],

@@ -14,14 +14,14 @@ O salão gerencia agendamentos de forma manual (WhatsApp, telefone e agenda de p
 - O sistema **impede conflitos de horário** (validação na camada de serviço e restrição no banco).
 - A equipe acessa um **painel** autenticado com a agenda do dia/semana e marca atendimentos como realizado, falta ou cancelado.
 
-ODS relacionado: **ODS 8 — Trabalho Decente e Crescimento Econômico** (metas 8.2 e 8.3).
+ODS relacionado: **ODS 8: Trabalho Decente e Crescimento Econômico** (metas 8.2 e 8.3).
 
 ## Arquitetura
 
 Cliente-servidor com back-end monolítico em camadas:
 
 ```
-frontend/  Angular (SPA + PWA) — telas da cliente e painel da equipe
+frontend/  Angular (SPA + PWA): telas da cliente e painel da equipe
 backend/   Python 3.12 + FastAPI
            ├── routers/      controladores REST (validação de entrada e autenticação)
            ├── services/     regras de negócio (horários livres, conflitos, autenticação)
@@ -98,7 +98,7 @@ docker run -p 8000:8000 -e DATABASE_URL=postgres://... -e JWT_SECRET=... -e BOOT
 | `JWT_SECRET` | Chave de assinatura dos tokens | valor de desenvolvimento |
 | `CORS_ORIGINS` | Origens permitidas, separadas por vírgula | `http://localhost:4200` |
 | `APP_ENV` | `development` ou `production` | `development` |
-| `BOOTSTRAP_SENHA` | Senha inicial da equipe na carga de produção | — (obrigatória em produção) |
+| `BOOTSTRAP_SENHA` | Senha inicial da equipe na carga de produção | sem padrão (obrigatória em produção) |
 | `FRONTEND_DIST` | Pasta do build do Angular servida pela API | `../frontend/dist/frontend/browser` |
 
 Nenhum segredo deve ser versionado; use variáveis de ambiente do provedor de hospedagem.
@@ -109,4 +109,4 @@ Todos os dados do seed são fictícios. Login de teste da equipe: `marcia@studio
 
 ## Autor
 
-Felipe Castro Sotto Mayor — Análise e Desenvolvimento de Sistemas, Instituto Infnet.
+Felipe Castro Sotto Mayor, Análise e Desenvolvimento de Sistemas, Instituto Infnet.
