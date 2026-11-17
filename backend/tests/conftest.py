@@ -70,7 +70,7 @@ def dados(db):
 def client(db):
     from app.services.agendamento_service import AgendamentoService
 
-    app = create_app()
+    app = create_app(frontend_dist=None)
     app.dependency_overrides[get_db] = lambda: db
     app.dependency_overrides[publico.get_agendamento_service] = lambda: AgendamentoService(
         db, relogio=relogio_fixo

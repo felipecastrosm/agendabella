@@ -3,13 +3,17 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from pathlib import Path
+
+from fastapi import Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.database import Base, engine
+from app.database import Base, engine, get_db
 from app.routers import auth, painel, publico
 
 logger = logging.getLogger("agendabella")
@@ -21,7 +25,13 @@ async def lifespan(_: FastAPI):
     yield
 
 
-def create_app() -> FastAPI:
+_PADRAO = object()
+
+
+def create_app(frontend_dist: Path | None | object = _PADRAO) -> FastAPI:
+    """Cria a aplicação. `frontend_dist=None` desliga a entrega do front-end (útil em testes)."""
+    if frontend_dist is _PADRAO:
+        frontend_dist = Path(settings.frontend_dist)
     app = FastAPI(
         title="AgendaBella API",
         version="1.0.0",
@@ -46,7 +56,8 @@ def create_app() -> FastAPI:
         resposta.headers["X-Content-Type-Options"] = "nosniff"
         resposta.headers["X-Frame-Options"] = "DENY"
         resposta.headers["Referrer-Policy"] = "no-referrer"
-        resposta.headers["Cache-Control"] = "no-store"
+        if request.url.path.startswith("/api/"):
+            resposta.headers["Cache-Control"] = "no-store"
         if settings.producao:
             resposta.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         return resposta
@@ -66,13 +77,45 @@ def create_app() -> FastAPI:
         )
 
     @app.get("/api/saude", tags=["infra"])
-    def saude():
+    def saude(db: Session = Depends(get_db)):
+        """Verificação de saúde usada pelo Render e pelo monitoramento: inclui o banco."""
+        try:
+            db.execute(text("SELECT 1"))
+        except Exception:
+            logger.exception("Falha na verificação de saúde do banco")
+            return JSONResponse(status_code=503, content={"status": "indisponivel"})
         return {"status": "ok"}
 
     app.include_router(publico.router)
     app.include_router(auth.router)
     app.include_router(painel.router)
+    if frontend_dist is not None:
+        montar_frontend(app, frontend_dist)
     return app
+
+
+def montar_frontend(app: FastAPI, pasta: Path) -> None:
+    """Serve o build do Angular na mesma origem da API (SPA com fallback para index.html)."""
+    if not (pasta / "index.html").is_file():
+        return
+    raiz = pasta.resolve()
+
+    @app.get("/{caminho:path}", include_in_schema=False)
+    def frontend(caminho: str):
+        if caminho.startswith("api/"):
+            return JSONResponse(status_code=404, content={"detail": "Recurso não encontrado."})
+        arquivo = (raiz / caminho).resolve()
+        # Impede path traversal: só entrega arquivos dentro da pasta do build.
+        if caminho and arquivo.is_file() and arquivo.is_relative_to(raiz):
+            cache = "public, max-age=31536000, immutable" if _tem_hash(arquivo.name) else "no-cache"
+            return FileResponse(arquivo, headers={"Cache-Control": cache})
+        return FileResponse(raiz / "index.html", headers={"Cache-Control": "no-cache"})
+
+
+def _tem_hash(nome: str) -> bool:
+    # Arquivos gerados pelo build do Angular têm hash no nome (ex.: main-ZSQLK7KA.js).
+    base = nome.rsplit(".", 1)[0]
+    return "-" in base and base.rsplit("-", 1)[1].isalnum() and len(base.rsplit("-", 1)[1]) >= 8
 
 
 app = create_app()
