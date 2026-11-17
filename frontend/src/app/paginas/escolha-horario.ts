@@ -38,17 +38,24 @@ import { Cabecalho } from '../shared/cabecalho';
         @if (carregando()) {
           <p class="dica" role="status">Carregando horários…</p>
         } @else if (horarios().length === 0) {
-          <p class="vazio" role="status">Não há horários livres neste dia. Escolha outro dia.</p>
+          <p class="vazio" role="status">
+            Não há horários livres neste dia: o salão pode estar fechado ou com a agenda completa. Escolha outro dia.
+          </p>
         } @else {
-          <div class="horarios" role="group" aria-label="Horários disponíveis">
-            @for (h of horarios(); track h) {
-              <button type="button" class="horario" [class.sel]="estado.hora() === h"
-                      [attr.aria-pressed]="estado.hora() === h" (click)="estado.hora.set(h)">
-                <b>@if (estado.hora() === h) { ✓ }{{ h }}</b>
-                <span>{{ estado.hora() === h ? 'Selecionado' : 'Disponível' }}</span>
-              </button>
+          @for (periodo of periodos(); track periodo.nome) {
+            @if (periodo.horarios.length) {
+              <h3 class="periodo">{{ periodo.nome }}</h3>
+              <div class="horarios" role="group" [attr.aria-label]="'Horários disponíveis — ' + periodo.nome">
+                @for (h of periodo.horarios; track h) {
+                  <button type="button" class="horario" [class.sel]="estado.hora() === h"
+                          [attr.aria-pressed]="estado.hora() === h" (click)="estado.hora.set(h)">
+                    <b>@if (estado.hora() === h) { ✓ }{{ h }}</b>
+                    <span>{{ estado.hora() === h ? 'Selecionado' : 'Disponível' }}</span>
+                  </button>
+                }
+              </div>
             }
-          </div>
+          }
         }
 
         <label for="nome">Seu nome</label>
@@ -99,6 +106,11 @@ export class EscolhaHorario implements OnInit {
     this.estado.semPreferencia() ? 'qualquer profissional' : this.estado.profissional()?.nome ?? '',
   );
   readonly dataSelecionada = computed(() => (this.estado.data() ? dataCurta(this.estado.data()!) : ''));
+  /** Ajuste da 1ª validação: separa a lista em Manhã e Tarde para reduzir a rolagem. */
+  readonly periodos = computed(() => [
+    { nome: 'Manhã', horarios: this.horarios().filter((h) => h < '12:00') },
+    { nome: 'Tarde', horarios: this.horarios().filter((h) => h >= '12:00') },
+  ]);
 
   ngOnInit(): void {
     if (!this.estado.servico()) {
@@ -107,7 +119,26 @@ export class EscolhaHorario implements OnInit {
     }
     this.api.profissionais().subscribe((lista) => {
       this.profissionais = lista;
-      this.escolherDia(this.estado.data() ?? this.dias[0].iso, true);
+      if (this.estado.data()) {
+        this.escolherDia(this.estado.data()!, true);
+      } else {
+        this.abrirNoPrimeiroDiaDisponivel();
+      }
+    });
+  }
+
+  /** Ajuste da 1ª validação: em vez de abrir em um dia fechado, abre no primeiro dia com horário livre. */
+  private abrirNoPrimeiroDiaDisponivel(): void {
+    const servico = this.estado.servico()!;
+    const alvo = this.estado.semPreferencia() ? this.profissionais : [this.estado.profissional()!];
+    this.carregando.set(true);
+    forkJoin(
+      alvo.map((p) =>
+        this.api.proximoDia(servico.id, p.id, this.dias[0].iso).pipe(catchError(() => of({ data: null }))),
+      ),
+    ).subscribe((respostas) => {
+      const datas = respostas.map((r) => r.data).filter((d): d is string => !!d && this.dias.some((x) => x.iso === d));
+      this.escolherDia(datas.sort()[0] ?? this.dias[0].iso);
     });
   }
 

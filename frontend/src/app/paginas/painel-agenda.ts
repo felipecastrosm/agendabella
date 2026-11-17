@@ -6,6 +6,7 @@ import { ApiService } from '../core/api.service';
 import { AuthService } from '../core/auth.service';
 import { dataCurta, isoLocal } from '../core/datas';
 import { Agenda, AgendamentoPainel } from '../core/modelos';
+import { formatarTelefone, linkWhatsApp } from '../core/telefone';
 import { Cabecalho } from '../shared/cabecalho';
 
 const ROTULOS: Record<AgendamentoPainel['status'], { texto: string; icone: string }> = {
@@ -55,7 +56,11 @@ const ROTULOS: Record<AgendamentoPainel['status'], { texto: string; icone: strin
                   </span>
                 </div>
                 <div>{{ ag.cliente }} · {{ ag.servico }}</div>
-                <div class="nota">Tel.: {{ ag.telefone }}</div>
+                <div class="contato">
+                  <span class="nota">Tel.: {{ telefone(ag.telefone) }}</span>
+                  <a class="whatsapp" [href]="whatsapp(ag.telefone)" target="_blank" rel="noopener noreferrer"
+                     [attr.aria-label]="'Conversar com ' + ag.cliente + ' no WhatsApp'">WhatsApp</a>
+                </div>
                 @if (ag.status === 'confirmado') {
                   <div class="acoes">
                     <button type="button" class="opcao" [disabled]="futuro(ag)" (click)="alterar(ag, 'realizado')">✓ Realizado</button>
@@ -124,6 +129,14 @@ export class PainelAgenda implements OnInit {
 
   curta(iso: string): string {
     return dataCurta(iso);
+  }
+
+  telefone(digitos: string): string {
+    return formatarTelefone(digitos);
+  }
+
+  whatsapp(digitos: string): string {
+    return linkWhatsApp(digitos);
   }
 
   sair(): void {

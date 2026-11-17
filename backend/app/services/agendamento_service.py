@@ -110,6 +110,27 @@ class AgendamentoService:
             profissional, servico, dia, self._ocupados(id_profissional, dia), self.relogio()
         )
 
+    def proximo_dia_disponivel(
+        self, id_servico: int, id_profissional: int, inicio: date, limite_dias: int = 14
+    ) -> date | None:
+        """Retorna o primeiro dia, a partir de `inicio`, com ao menos um horário livre.
+
+        Ajuste da 1ª rodada de validação: a tela abria em dia sem atendimento e a
+        mensagem "Não há horários livres" era interpretada como agenda cheia.
+        """
+        servico, profissional = self._carregar(id_servico, id_profissional)
+        agora = self.relogio()
+        for deslocamento in range(limite_dias):
+            dia = inicio + timedelta(days=deslocamento)
+            if not profissional.atende_no_dia(dia):
+                continue
+            livres = calcular_horarios_livres(
+                profissional, servico, dia, self._ocupados(id_profissional, dia), agora
+            )
+            if livres:
+                return dia
+        return None
+
     def agendar(
         self,
         id_servico: int,
